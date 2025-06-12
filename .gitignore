@@ -1,1 +1,5 @@
+# Archivos de entorno
 .env
+.env.*
+*.env
+secrets.*

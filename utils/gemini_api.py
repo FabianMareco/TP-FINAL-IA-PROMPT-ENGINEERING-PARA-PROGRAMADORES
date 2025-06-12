@@ -4,14 +4,18 @@ import os
 from pathlib import Path
 
 
-# Cargar variables de entorno
-env_path = Path(__file__).resolve().parent.parent / '.env'
-load_dotenv(env_path)
+## Cargar API Key desde Secrets de Streamlit o .env local
+try:
+    GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+except:
+    # Fallback para desarrollo local
+    from dotenv import load_dotenv
+    import os
+    load_dotenv(Path(__file__).parent.parent / '.env')
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Configurar Gemini
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
-    raise ValueError("La clave de API de Gemini no está configurada. Verifica tu archivo .env.")
+    raise ValueError("🔴 Error: No se encontró GEMINI_API_KEY")
 
 genai.configure(api_key=GEMINI_API_KEY)
 
