@@ -1,32 +1,41 @@
 import google.generativeai as genai
-import os
 import streamlit as st
+import os
 
 def load_api_key():
-    """Versión simplificada solo para Streamlit Cloud"""
+    """Carga la API Key con verificación explícita"""
     try:
-        # 1. Intenta desde Secrets
-        if 'GEMINI_API_KEY' in st.secrets:
+        # 1. Intenta desde Secrets de Streamlit (producción)
+        if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets:
+            st.success("✅ API Key cargada desde Secrets")
             return st.secrets['GEMINI_API_KEY']
         
-        # 2. Fallback para debugging
-        return os.getenv("GEMINI_API_KEY")  # Solo para desarrollo local
-    
+        # 2. Intenta desde variable de entorno (desarrollo)
+        key = os.getenv("GEMINI_API_KEY")
+        if key:
+            st.success("✅ API Key cargada desde variables de entorno")
+            return key
+            
+        # Si no se encuentra
+        st.error("""
+        🔴 Configura la API Key en:
+        1. Secrets de Streamlit (producción)
+        2. Variables de entorno (desarrollo)
+        """)
+        return None
+        
     except Exception as e:
-        st.error(f"Error cargando API Key: {str(e)}")
+        st.error(f"Error técnico: {str(e)}")
         return None
 
 # Configuración
-GEMINI_API_KEY = load_api_key() or st.error("""
-🔴 Configura la API Key en:
-1. Secrets de Streamlit (producción)
-2. Variables de entorno (desarrollo)
-""")
+GEMINI_API_KEY = load_api_key()
 
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-else:
-    st.stop()
+if not GEMINI_API_KEY:
+    st.warning("La aplicación se detendrá por falta de API Key")
+    st.stop()  # Detiene completamente la aplicación
+
+genai.configure(api_key=GEMINI_API_KEY)
 
 
 # Configuración del modelo
