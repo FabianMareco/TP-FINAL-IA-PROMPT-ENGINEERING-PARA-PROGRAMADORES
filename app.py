@@ -1,9 +1,16 @@
 import streamlit as st
-from utils.gemini_api import get_response  # Cambia la importación
+from utils.gemini_api import get_response
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
+# Configuración inicial con spinner
+with st.spinner('Inicializando aplicación...'):
+    try:
+        from utils.gemini_api import get_response
+    except Exception as e:
+        st.error(f"Error crítico al cargar dependencias: {str(e)}")
+        st.stop()
 st.write("Gemini API Key cargada:", os.getenv("GEMINI_API_KEY") is not None)
 
 st.title("Happblemos - Tu espacio de escucha")
