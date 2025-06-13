@@ -8,7 +8,7 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
-setenv VIRTUAL_ENV '/home/fabian/Documentos/CODERHOUSE/PROMPT ENGINERING/TP FINAL IA PROMPT ENGINERING PARA PROGRAMADORES/happblemos/env'
+setenv VIRTUAL_ENV '/home/fabian/Documentos/CODERHOUSE/PROMPT ENGINEERING PARA PROGRAMADORES/TP FINAL IA PROMPT ENGINEERING PARA PROGRAMADORES/happblemos/env'
 
 set _OLD_VIRTUAL_PATH="$PATH"
 setenv PATH "$VIRTUAL_ENV/"bin":$PATH"

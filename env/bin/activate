@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV='/home/fabian/Documentos/CODERHOUSE/PROMPT ENGINERING/TP FINAL IA PROMPT ENGINERING PARA PROGRAMADORES/happblemos/env'
+VIRTUAL_ENV='/home/fabian/Documentos/CODERHOUSE/PROMPT ENGINEERING PARA PROGRAMADORES/TP FINAL IA PROMPT ENGINEERING PARA PROGRAMADORES/happblemos/env'
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

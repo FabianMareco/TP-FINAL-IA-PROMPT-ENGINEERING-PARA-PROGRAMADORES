@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV '/home/fabian/Documentos/CODERHOUSE/PROMPT ENGINERING/TP FINAL IA PROMPT ENGINERING PARA PROGRAMADORES/happblemos/env'
+set -gx VIRTUAL_ENV '/home/fabian/Documentos/CODERHOUSE/PROMPT ENGINEERING PARA PROGRAMADORES/TP FINAL IA PROMPT ENGINEERING PARA PROGRAMADORES/happblemos/env'
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

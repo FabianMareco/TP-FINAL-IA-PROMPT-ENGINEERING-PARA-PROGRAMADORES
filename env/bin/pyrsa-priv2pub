@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/home/fabian/Documentos/CODERHOUSE/PROMPT ENGINERING/TP FINAL IA PROMPT ENGINERING PARA PROGRAMADORES/happblemos/env/bin/python3.11" "$0" "$@"
+'''exec' "/home/fabian/Documentos/CODERHOUSE/PROMPT ENGINEERING PARA PROGRAMADORES/TP FINAL IA PROMPT ENGINEERING PARA PROGRAMADORES/happblemos/env/bin/python3.11" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re
