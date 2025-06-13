@@ -1,69 +1,33 @@
 import google.generativeai as genai
 import os
-from pathlib import Path
-import sys
-
-# Configuración para Streamlit
-IN_STREAMLIT = "streamlit" in sys.modules
-
-if IN_STREAMLIT:
-    import streamlit as st
+import streamlit as st
 
 def load_api_key():
-    """Carga la API Key con manejo robusto de errores"""
+    """Versión simplificada solo para Streamlit Cloud"""
     try:
-        # 1. Intenta desde variable de entorno
-        if os.getenv("GEMINI_API_KEY"):
-            return os.getenv("GEMINI_API_KEY")
-            
-        # 2. Intenta desde .env file
-        env_path = Path(__file__).parent.parent / '.env'
-        if env_path.exists():
-            from dotenv import load_dotenv
-            load_dotenv(env_path)
-            if os.getenv("GEMINI_API_KEY"):
-                return os.getenv("GEMINI_API_KEY")
+        # 1. Intenta desde Secrets
+        if 'GEMINI_API_KEY' in st.secrets:
+            return st.secrets['GEMINI_API_KEY']
         
-        # 3. Intenta desde Streamlit secrets (solo en producción)
-        if IN_STREAMLIT:
-            try:
-                if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets:
-                    return st.secrets['GEMINI_API_KEY']
-            except Exception:
-                pass
-        
-        # Si no encuentra en ningún lugar
-        error_msg = "🔴 Error: No se encontró GEMINI_API_KEY en:"
-        error_msg += "\n1. Variables de entorno"
-        error_msg += "\n2. Archivo .env"
-        if IN_STREAMLIT:
-            error_msg += "\n3. Streamlit secrets"
-        
-        if IN_STREAMLIT:
-            st.error(error_msg)
-        else:
-            print(error_msg)
-        
-        return None
-        
+        # 2. Fallback para debugging
+        return os.getenv("GEMINI_API_KEY")  # Solo para desarrollo local
+    
     except Exception as e:
-        error_msg = f"Error cargando API Key: {str(e)}"
-        if IN_STREAMLIT:
-            st.error(error_msg)
-        else:
-            print(error_msg)
+        st.error(f"Error cargando API Key: {str(e)}")
         return None
 
-# Cargar API Key
-GEMINI_API_KEY = load_api_key()
-if not GEMINI_API_KEY:
-    if IN_STREAMLIT:
-        st.stop()
-    else:
-        raise ValueError("API Key no configurada")
+# Configuración
+GEMINI_API_KEY = load_api_key() or st.error("""
+🔴 Configura la API Key en:
+1. Secrets de Streamlit (producción)
+2. Variables de entorno (desarrollo)
+""")
 
-# Resto de tu configuración...
-genai.configure(api_key=GEMINI_API_KEY)
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+else:
+    st.stop()
+
 
 # Configuración del modelo
 generation_config = {
