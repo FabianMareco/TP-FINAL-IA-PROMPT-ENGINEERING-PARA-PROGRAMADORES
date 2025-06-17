@@ -1,7 +1,10 @@
-
 import google.generativeai as genai
 import os
+import sys
 from pathlib import Path
+
+# Detectar si estamos en Streamlit Cloud
+IS_STREAMLIT_CLOUD = os.path.exists('/mount/src')
 
 def load_api_key():
     """Carga la API Key con múltiples fallbacks"""
@@ -10,40 +13,46 @@ def load_api_key():
     if key:
         return key
         
-    # 2. Intenta desde .env file
-    env_path = Path(__file__).parent.parent / '.env'
-    if env_path.exists():
-        from dotenv import load_dotenv
-        load_dotenv(env_path)
-        key = os.getenv("GEMINI_API_KEY")
-        if key:
-            return key
+    # 2. Intenta desde .env file (solo local)
+    if not IS_STREAMLIT_CLOUD:
+        env_path = Path(__file__).parent.parent / '.env'
+        if env_path.exists():
+            from dotenv import load_dotenv
+            load_dotenv(env_path)
+            key = os.getenv("GEMINI_API_KEY")
+            if key:
+                return key
     
     # 3. Intenta desde Streamlit secrets (solo en producción)
-    try:
+    if IS_STREAMLIT_CLOUD:
+        try:
+            import streamlit as st
+            if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets:
+                return st.secrets['GEMINI_API_KEY']
+        except:
+            pass
+    
+    # Si no se encuentra en ningún lugar
+    error_msg = "🔴 Error: No se encontró GEMINI_API_KEY. Configura:"
+    error_msg += "\n1. Secrets en Streamlit Cloud (producción)" if IS_STREAMLIT_CLOUD else ""
+    error_msg += "\n2. Archivo .env (desarrollo)" if not IS_STREAMLIT_CLOUD else ""
+    
+    if IS_STREAMLIT_CLOUD:
         import streamlit as st
-        if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets:
-            return st.secrets['GEMINI_API_KEY']
-    except:
-        pass
+        st.error(error_msg)
+    else:
+        print(error_msg)
     
     return None
 
 # Cargar API Key
 GEMINI_API_KEY = load_api_key()
-
 if not GEMINI_API_KEY:
-    # Manejo de errores específico por entorno
-    try:
+    if IS_STREAMLIT_CLOUD:
         import streamlit as st
-        st.error("""
-        🔴 Error: Configura la API Key en:
-        1. Secrets de Streamlit (producción)
-        2. Archivo .env (desarrollo)
-        """)
         st.stop()
-    except:
-        raise ValueError("API Key no configurada - Crea un archivo .env o configura los Secrets")
+    else:
+        raise ValueError("API Key no configurada")
 
 # Configuración de Gemini
 genai.configure(api_key=GEMINI_API_KEY)
