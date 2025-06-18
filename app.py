@@ -3,6 +3,9 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from utils.gemini_api import get_response
+from utils.gemini_api import GEMINI_API_KEY
+st.sidebar.write("🔐 Key cargada:", GEMINI_API_KEY[:10] + "...")  # Muestra solo parte
+
 
 # --- Configuración inicial mejorada ---
 is_production = os.path.exists('/mount/src')
