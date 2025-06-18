@@ -21,15 +21,15 @@ with st.expander("🔍 Diagnóstico Técnico", expanded=False):
     **Entorno:** {"Producción (Streamlit Cloud)" if is_production else "Desarrollo local"}
     
     **Configuración detectada:**
-    - Secrets disponibles: {list(getattr(st, 'secrets', {}).keys()}
+    - Secrets disponibles: {list(getattr(st, 'secrets', {}).keys())}
     - Key en variables entorno: {'Sí' if os.getenv("GEMINI_API_KEY") else 'No'}
     - Key en secrets: {'Sí' if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets else 'No'}
+    """)
 
 # --- Tu aplicación normal ---
 st.title("Happblemos - Tu espacio de escucha")
 
-st.markdown("Escribí lo que quieras compartir acerca de como te sentís o como estuvo tu día:")
-
+# Resto de tu interfaz...
 user_input = st.text_area("Tu mensaje", height=150)
 
 if st.button("Happblemos"):
