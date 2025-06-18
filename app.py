@@ -1,18 +1,32 @@
 import streamlit as st
-from utils.gemini_api import get_response
 import os
 from dotenv import load_dotenv
+from pathlib import Path
+from utils.gemini_api import get_response
 
-load_dotenv()
-# Configuración inicial con spinner
-with st.spinner('Inicializando aplicación...'):
-    try:
-        from utils.gemini_api import get_response
-    except Exception as e:
-        st.error(f"Error crítico al cargar dependencias: {str(e)}")
-        st.stop()
-st.write("Gemini API Key cargada:", os.getenv("GEMINI_API_KEY") is not None)
+# --- Configuración inicial mejorada ---
+is_production = os.path.exists('/mount/src')
 
+if not is_production:  # Solo en desarrollo
+    env_path = Path(__file__).parent.parent / '.env'
+    if env_path.exists():
+        load_dotenv(env_path)
+        st.sidebar.success("✅ Modo desarrollo - .env cargado")
+    else:
+        st.sidebar.warning("⚠️ .env no encontrado (solo desarrollo)")
+
+# --- Diagnóstico profesional ---
+with st.expander("🔍 Diagnóstico Técnico", expanded=False):
+    st.write(f"""
+    **Entorno:** {"Producción (Streamlit Cloud)" if is_production else "Desarrollo local"}
+    
+    **Configuración detectada:**
+    - Secrets disponibles: {list(getattr(st, 'secrets', {}).keys()}
+    - Key en variables entorno: {'Sí' if os.getenv("GEMINI_API_KEY") else 'No'}
+    - Key en secrets: {'Sí' if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets else 'No'}
+    """)
+
+# --- Tu aplicación normal ---
 st.title("Happblemos - Tu espacio de escucha")
 
 st.markdown("Escribí lo que quieras compartir acerca de como te sentís o como estuvo tu día:")
