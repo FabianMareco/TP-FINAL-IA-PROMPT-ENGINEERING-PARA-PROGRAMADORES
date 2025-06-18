@@ -24,7 +24,6 @@ with st.expander("🔍 Diagnóstico Técnico", expanded=False):
     - Secrets disponibles: {list(getattr(st, 'secrets', {}).keys()}
     - Key en variables entorno: {'Sí' if os.getenv("GEMINI_API_KEY") else 'No'}
     - Key en secrets: {'Sí' if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets else 'No'}
-    """)
 
 # --- Tu aplicación normal ---
 st.title("Happblemos - Tu espacio de escucha")
