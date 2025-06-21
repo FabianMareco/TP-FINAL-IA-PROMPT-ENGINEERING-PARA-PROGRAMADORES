@@ -2,32 +2,18 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-from utils.gemini_api import get_response
-from utils.gemini_api import GEMINI_API_KEY
-st.sidebar.write("🔐 Key cargada:", GEMINI_API_KEY[:10] + "...")  # Muestra solo parte
 
+st.title("Verificación de Secrets")
 
-# --- Configuración inicial mejorada ---
-is_production = os.path.exists('/mount/src')
+# Verifica si está cargando correctamente
+if 'GEMINI_API_KEY' in st.secrets:
+    st.success(f"✅ Key cargada correctamente (longitud: {len(st.secrets['GEMINI_API_KEY'])})")
+    st.code(f"Prefijo: {st.secrets['GEMINI_API_KEY'][:10]}...")
+else:
+    st.error("❌ No se encontró GEMINI_API_KEY en secrets")
 
-if not is_production:  # Solo en desarrollo
-    env_path = Path(__file__).parent.parent / '.env'
-    if env_path.exists():
-        load_dotenv(env_path)
-        st.sidebar.success("✅ Modo desarrollo - .env cargado")
-    else:
-        st.sidebar.warning("⚠️ .env no encontrado (solo desarrollo)")
-
-# --- Diagnóstico profesional ---
-with st.expander("🔍 Diagnóstico Técnico", expanded=False):
-    st.write(f"""
-    **Entorno:** {"Producción (Streamlit Cloud)" if is_production else "Desarrollo local"}
-    
-    **Configuración detectada:**
-    - Secrets disponibles: {list(getattr(st, 'secrets', {}).keys())}
-    - Key en variables entorno: {'Sí' if os.getenv("GEMINI_API_KEY") else 'No'}
-    - Key en secrets: {'Sí' if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets else 'No'}
-    """)
+st.write("Ruta actual:", os.getcwd())
+st.write("Contenido de .streamlit:", os.listdir(".streamlit"))
 
 # --- Tu aplicación normal ---
 st.title("Happblemos - Tu espacio de escucha")
