@@ -3,18 +3,6 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-st.title("Verificación de Secrets")
-
-# Verifica si está cargando correctamente
-if 'GEMINI_API_KEY' in st.secrets:
-    st.success(f"✅ Key cargada correctamente (longitud: {len(st.secrets['GEMINI_API_KEY'])})")
-    st.code(f"Prefijo: {st.secrets['GEMINI_API_KEY'][:10]}...")
-else:
-    st.error("❌ No se encontró GEMINI_API_KEY en secrets")
-
-st.write("Ruta actual:", os.getcwd())
-st.write("Contenido de .streamlit:", os.listdir(".streamlit"))
-
 # --- Tu aplicación normal ---
 st.title("Happblemos - Tu espacio de escucha")
 
