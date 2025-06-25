@@ -1,11 +1,16 @@
 import streamlit as st
 import os
-from dotenv import load_dotenv
 from pathlib import Path
+from utils.gemini_api import get_response
+from dotenv import load_dotenv
+load_dotenv()  
+# --- Configuración inicial mejorada ---
 
+# --- Tu aplicación normal ---
 st.title("Happblemos - Tu espacio de escucha")
 
-user_input = st.text_area("Escribe lo que quieras compartir acerca de como te sentís o como estuvo tu día:", height=150)
+# Resto de tu interfaz...
+user_input = st.text_area("Tu mensaje", height=150)
 
 if st.button("Happblemos"):
     if user_input:
