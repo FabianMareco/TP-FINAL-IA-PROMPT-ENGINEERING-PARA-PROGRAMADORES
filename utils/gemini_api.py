@@ -4,17 +4,18 @@ from pathlib import Path
 
 # Librerías externas
 import google.generativeai as genai
-import streamlit as st  # Lo usás varias veces, mejor importarlo arriba
+import streamlit as st
 from dotenv import load_dotenv
 
 # Detección del entorno (ej. Streamlit Cloud)
 IS_STREAMLIT_CLOUD = 'streamlit' in sys.modules and os.path.exists('/mount/src')
 
-GEMINI_KEY_NAME = "GEMINI_API_KEY"  # Para evitar repetir el nombre clave
+# Constante para evitar hardcodear el nombre de la variable
+GEMINI_KEY_NAME = "GEMINI_API_KEY"
 
 
 def load_api_key():
-    """Carga la API Key con verificación desde múltiples fuentes"""
+    """Carga la API Key desde secrets, variables de entorno o .env"""
     try:
         # 1. Intenta desde Streamlit Secrets (producción)
         if IS_STREAMLIT_CLOUD and hasattr(st, 'secrets') and GEMINI_KEY_NAME in st.secrets:
@@ -27,16 +28,15 @@ def load_api_key():
         if api_key and api_key.startswith('AIza'):
             return api_key
 
-        # 3. Intenta cargar desde .env (entorno local)
-        if not IS_STREAMLIT_CLOUD:
-            env_path = Path(__file__).parent.parent / '.env'
-            if env_path.exists():
-                load_dotenv(env_path)
-                api_key = os.environ.get(GEMINI_KEY_NAME)
-                if api_key and api_key.startswith('AIza'):
-                    return api_key
+        # 3. Intenta desde .env (modo desarrollo local)
+        load_dotenv()  # ← Más flexible: busca automáticamente en el directorio actual
+        api_key = os.environ.get(GEMINI_KEY_NAME)
+        if api_key and api_key.startswith('AIza'):
+            if not IS_STREAMLIT_CLOUD:
+                print(f"🔑 DEBUG: Clave cargada desde .env: {api_key[:10]}...")
+            return api_key
 
-        # Si no se encontró una API Key válida
+        # Si no se encuentra ninguna clave válida
         error_msg = """\
 🔴 Error: No se encontró una API Key válida.
 
@@ -72,8 +72,7 @@ if not GEMINI_API_KEY:
     else:
         raise ValueError("API Key no configurada correctamente")
 
-
-# Configurar Gemini antes de llamar a la API
+# Configurar Gemini antes de usar la API
 genai.configure(api_key=GEMINI_API_KEY)
 
 # Configuración del modelo
@@ -83,6 +82,12 @@ generation_config = {
     "top_k": 32,
     "max_output_tokens": 4096,
 }
+
+safety_settings = [
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"}
+]
 # Configuración del modelo
 generation_config = {
     "temperature": 0.8,
